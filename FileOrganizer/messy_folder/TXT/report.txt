@@ -1,0 +1,3 @@
+Sales report for Q1
+Server uptime: 99.9%
+Incidents: 0

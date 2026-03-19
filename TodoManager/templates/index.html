@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web To-Do List</title>
+    <!-- Tailwind CSS is an amazing CSS framework that lets us style components without writing custom CSS files! -->
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen py-10 font-sans">
+
+    <!-- Main Container -->
+    <div class="max-w-md mx-auto bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden md:max-w-2xl">
+        <div class="p-8">
+            <h1 class="block mt-1 text-3xl leading-tight font-extrabold text-gray-900 mb-6 text-center">
+                <span class="text-blue-500">✓</span> My Tasks
+            </h1>
+            
+            <!-- Add Task Form -->
+            <!-- The 'action' uses Jinja2 syntax {{ url_for('add') }} to dynamically find the /add route in Flask -->
+            <form action="{{ url_for('add') }}" method="POST" class="mb-8 flex gap-3">
+                <input type="text" name="title" required placeholder="What needs to be done?" 
+                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 text-lg shadow-sm">
+                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg shadow-md transition duration-200">
+                    Add
+                </button>
+            </form>
+
+            <!-- Task List -->
+            <ul class="space-y-4">
+                <!-- Jinja2 loop! This is Python running inside HTML! -->
+                {% for task in tasks %}
+                    <li class="flex items-center justify-between p-4 border rounded-xl hover:shadow-md transition duration-200 {% if task.completed %}bg-gray-50 border-gray-200{% else %}bg-white border-gray-300{% endif %}">
+                        
+                        <!-- Task Title -->
+                        <span class="text-lg font-medium {% if task.completed %}line-through text-gray-400{% else %}text-gray-800{% endif %}">
+                            {{ task.title }}
+                        </span>
+                        
+                        <!-- Action Buttons -->
+                        <!-- loop.index0 comes from Jinja2, giving us the 0-based index of the array! -->
+                        <div class="flex gap-2">
+                            <!-- Only show Complete button if not already completed -->
+                            {% if not task.completed %}
+                            <form action="{{ url_for('complete', task_id=loop.index0) }}" method="POST">
+                                <button type="submit" class="text-sm bg-green-500 hover:bg-green-600 text-white font-semibold py-1.5 px-3 rounded shadow-sm transition duration-200">
+                                    Done
+                                </button>
+                            </form>
+                            {% endif %}
+                            
+                            <!-- Delete Button -->
+                            <form action="{{ url_for('delete', task_id=loop.index0) }}" method="POST">
+                                <button type="submit" class="text-sm bg-red-500 hover:bg-red-600 text-white font-semibold py-1.5 px-3 rounded shadow-sm transition duration-200">
+                                    Delete
+                                </button>
+                            </form>
+                        </div>
+                    </li>
+                {% else %}
+                    <!-- Displayed if the list is completely empty -->
+                    <li class="text-center text-gray-500 italic py-6 bg-gray-50 rounded-xl border border-dashed border-gray-300">
+                        No tasks yet! Add one above.
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+</body>
+</html>
