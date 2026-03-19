@@ -8,9 +8,13 @@ print("====================================")
 
 # This pattern ensures the playwright components clean up after themselves
 with sync_playwright() as p:
-    # We use headless=False so you can actually watch the browser open!
+    # Detect if we are running in CI
+    is_ci = os.environ.get('CI') == 'true'
+    
+    # We use headless=False so you can actually watch the browser open if running locally!
     # slow_mo=500 slows down the robot by 500ms per action so human eyes can keep up.
-    browser = p.chromium.launch(headless=False, slow_mo=500)
+    # In CI, it will run headlessly seamlessly.
+    browser = p.chromium.launch(headless=is_ci, slow_mo=0 if is_ci else 500)
     page = browser.new_page()
 
     print("Navigating to http://127.0.0.1:5000 ...")
